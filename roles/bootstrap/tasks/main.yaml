@@ -1,0 +1,45 @@
+- name: Explicitly gather facts
+  setup:
+
+- name: Install sudo
+  apt:
+    name: sudo
+    state: present
+    cache_valid_time: 3600
+    force_apt_get: yes
+
+- name: Install acl
+  apt:
+    name: acl
+    state: present
+    cache_valid_time: 3600
+    force_apt_get: yes
+
+- name: Allow ansible user to have passwordless sudo
+  lineinfile:
+    path: /etc/sudoers.d/ansible
+    line: "ansible ALL=(ALL) NOPASSWD: ALL"
+    mode: 0440
+    create: yes
+    validate: /usr/sbin/visudo -cf %s
+
+- name: Add ansible user and set groups
+  user:
+    name: ansible
+    shell: /bin/bash
+    home: /home/ansible
+
+- name: Create ansible's authorized_keys
+  become: yes
+  become_user: root
+  authorized_key:
+    user: ansible
+    path: /home/ansible/.ssh/authorized_keys
+    key: |
+      {{ lookup('file', 'ansible_rsa.pub') }}
+    exclusive: yes
+
+- name: Remove ansible's password
+  user:
+    name: ansible
+    password: "*"

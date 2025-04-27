@@ -61,4 +61,25 @@
     append: yes
   loop: "{{ jellyfin_users }}"
 
+- name: Download Jellyfin GPG key
+  get_url:
+    url: https://repo.jellyfin.org/jellyfin_team.gpg.key
+    dest: /etc/apt/trusted.gpg.d/jellyfin.asc
+    mode: '0644'
+  
+- name: Add Jellyfin repository
+  apt_repository:
+    repo: "deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/jellyfin.asc] https://repo.jellyfin.org/ubuntu {{ ansible_distribution_release | lower }} main"
+    state: present
+
+- name: Update APT again after adding Docker repo
+  apt:
+    update_cache: yes
+
+- name: Instal HW drivers
+  apt:
+    name:
+      - jellyfin-ffmpeg7
+      - intel-opencl-icd
+    state: present
   

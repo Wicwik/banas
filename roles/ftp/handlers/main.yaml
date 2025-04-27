@@ -1,0 +1,4 @@
+- name: Restart FTP server
+  service:
+    name: "{{ ftp_service }}"
+    state: restarted

@@ -1,0 +1,19 @@
+- name: Install FTP server
+  apt:
+    name: "{{ ftp_package }}"
+    state: present
+
+- name: Copy vsftpd config
+  template:
+    src: vsftpd.conf.j2
+    dest: "{{ ftp_config_path }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart FTP server
+
+- name: Ensure FTP server is running and enabled
+  service:
+    name: "{{ ftp_service }}"
+    state: started
+    enabled: yes

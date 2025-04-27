@@ -1,0 +1,14 @@
+# Basic vsftpd.conf
+anonymous_enable={{ ftp_anonymous_enable }}
+local_enable={{ ftp_local_enable }}
+write_enable={{ ftp_write_enable }}
+local_umask=022
+dirmessage_enable=YES
+use_localtime=YES
+xferlog_enable=YES
+connect_from_port_20=YES
+listen=YES
+listen_ipv6=NO
+pam_service_name=vsftpd
+userlist_enable=NO
+tcp_wrappers=YES

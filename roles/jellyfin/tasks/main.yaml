@@ -1,18 +1,64 @@
+- name: Create a group for media
+  group:
+    name: jellyfin
+
 - name: Ensure Jellyfin config directory exists
   file:
     path: "{{ jellyfin_config_dir }}"
     state: directory
     owner: root
-    group: root
-    mode: '0755'
+    group: jellyfin
+    mode: '0775'
+
+- name: Ensure Jellyfin data directory exists
+  file:
+    path: /data/jellyfin
+    state: directory
+    owner: root
+    group: jellyfin
+    mode: '0775'
+
+- name: Create media directory
+  file:
+    path: /data/jellyfin/media
+    state: directory
+    owner: root
+    group: jellyfin
+    mode: '0775'
+
+- name: Create media directory
+  file:
+    path: /data/jellyfin/media/movies
+    state: directory
+    owner: root
+    group: jellyfin
+    mode: '0775'
+
+- name: Create media directory
+  file:
+    path: /data/jellyfin/media/shows
+    state: directory
+    owner: root
+    group: jellyfin
+    mode: '0775'
+
 
 - name: Copy Docker Compose file
   copy:
-    src: docker-compose.yml
-    dest: "{{ jellyfin_config_dir }}/docker-compose.yml"
+    src: docker-compose.yaml
+    dest: "{{ jellyfin_config_dir }}/docker-compose.yaml"
     mode: '0644'
 
 - name: Start Jellyfin container with Docker Compose
-  community.docker.docker_compose:
+  community.docker.docker_compose_v2:
     project_src: "{{ jellyfin_config_dir }}"
     state: present
+
+- name: Add users to jellyfin group
+  ansible.builtin.user:
+    name: "{{ item.name }}"
+    groups: jellyfin
+    append: yes
+  loop: "{{ jellyfin_users }}"
+
+  

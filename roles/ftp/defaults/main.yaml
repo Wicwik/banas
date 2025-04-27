@@ -1,0 +1,6 @@
+ftp_package: vsftpd
+ftp_service: vsftpd
+ftp_config_path: /etc/vsftpd.conf
+ftp_anonymous_enable: "NO"
+ftp_local_enable: "YES"
+ftp_write_enable: "YES"

@@ -1,0 +1,6 @@
+- name: Setup NAS server with Jellyfin
+  hosts: "{{ target }}"
+  become: true
+
+  roles:
+    - btrfs_raid10

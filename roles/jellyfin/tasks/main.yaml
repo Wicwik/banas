@@ -10,9 +10,28 @@
     group: jellyfin
     mode: '0775'
 
-- name: Ensure Jellyfin data directory exists
+- name: Ensure /data is mounted and available
+  stat:
+    path: /data
+  register: data_dir
+
+- name: Fail if /data is not a Btrfs mount
+  fail:
+    msg: "/data must be a mounted Btrfs filesystem"
+  when: not data_dir.stat.exists
+
+- name: Get UUID of the Btrfs filesystem
+  command: "blkid -s UUID -o value /dev/sda"
+  register: btrfs_uuid
+
+- name: Create Btrfs subvolume
+  command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
+  args:
+    creates: "/data/{{ btrfs_subvolume }}"
+
+- name: Ensure Jellyfin directory has correct ownership
   file:
-    path: /data/jellyfin
+    path: "/data/{{ btrfs_subvolume }}"
     state: directory
     owner: root
     group: jellyfin
@@ -20,7 +39,7 @@
 
 - name: Create media directory
   file:
-    path: /data/jellyfin/media
+    path: "/data/{{ btrfs_subvolume }}/media"
     state: directory
     owner: root
     group: jellyfin
@@ -28,7 +47,7 @@
 
 - name: Create media directory
   file:
-    path: /data/jellyfin/media/movies
+    path: "/data/{{ btrfs_subvolume }}/media/movies"
     state: directory
     owner: root
     group: jellyfin
@@ -36,12 +55,11 @@
 
 - name: Create media directory
   file:
-    path: /data/jellyfin/media/shows
+    path: "/data/{{ btrfs_subvolume }}/media/shows"
     state: directory
     owner: root
     group: jellyfin
     mode: '0775'
-
 
 - name: Copy Docker Compose file
   copy:

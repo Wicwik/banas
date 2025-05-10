@@ -1,0 +1,42 @@
+
+- name: Ensure required packages are installed
+  package:
+    name: btrfs-progs
+    state: present
+
+- name: Create mount point directory
+  file:
+    path: "{{ btrfs_mount_point }}"
+    state: directory
+    owner: root
+    group: root
+    mode: 0755
+
+- name: Check if btrfs filesystem already exists
+  command: "blkid -s TYPE -o value {{ btrfs_disks[0] }}"
+  register: blkid_output
+  ignore_errors: yes
+
+- name: Create Btrfs RAID10 filesystem (only if not present)
+  command: "mkfs.btrfs -f -d raid10 -m raid10 {{ btrfs_disks | join(' ') }} -L {{ btrfs_fs_label }}"
+  when: blkid_output.stdout != 'btrfs'
+
+- name: Get UUID of the Btrfs filesystem
+  command: "blkid -s UUID -o value {{ btrfs_disks[0] }}"
+  register: btrfs_uuid
+
+- name: Mount Btrfs raid10 root
+  mount:
+    path: "{{ btrfs_mount_point }}"
+    src: "/dev/disk/by-uuid/{{ btrfs_uuid.stdout }}"
+    fstype: btrfs
+    opts: defaults,noatime,compress=zstd
+    state: mounted
+
+- name: /data in /etc/fstab
+  mount:
+    path: "{{ btrfs_mount_point }}"
+    src: "/dev/disk/by-uuid/{{ btrfs_uuid.stdout }}"
+    fstype: btrfs
+    opts: defaults,noatime,compress=zstd
+    state: present

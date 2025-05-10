@@ -1,0 +1,3 @@
+btrfs_disks: [/dev/sda, /dev/sdb, /dev/sdc]
+btrfs_mount_point: /data
+btrfs_fs_label: data

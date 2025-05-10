@@ -1,4 +1,8 @@
 jellyfin_config_dir: /etc/jellyfin
 
+data_device: /dev/sda
+
 jellyfin_users:
   - name: robert
+
+btrfs_subvolume: "@jellyfin"

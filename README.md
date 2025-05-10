@@ -27,5 +27,5 @@ ansible-playbook bootstrap.yaml -u <USER> -e target=<IP>  --ask-become-pass -i <
 
 To setup docker and yellifin run following command.
 ```
-ansible-playbook setup_nas.yaml -e target=banas -e user=robert -i inventory.yaml
+ansible-playbook banas.yaml -e target=banas -i inventory.yaml
 ```

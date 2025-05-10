@@ -12,6 +12,8 @@
     name:
       - net-tools
       - python3-passlib
+      - lm-sensors
+      - dstat
     state: present
 
 - name: Install required packages for Docker

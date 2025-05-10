@@ -29,7 +29,7 @@ certificatesResolvers:
       httpChallenge:
         entryPoint: web
 log:
-  filePath: "/traefik.log"
+  filePath: /var/log/traefik/traefik.log
 
 accessLog:
-  filePath: "/access.log"
+  filePath: /var/log/traefik/traefik.access.log

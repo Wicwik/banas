@@ -15,8 +15,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /opt/traefik/traefik.yml:/traefik.yml
       - /opt/traefik/certs:/certs
-      - /var/log/traefik/traefik.log:/traefik.log
-      - /var/log/traefik/access.log/access.log
+      - /var/log/traefik:/var/log/traefik
     networks:
       - proxy
 

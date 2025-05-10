@@ -1,0 +1,28 @@
+- name: Create Traefik config directory
+  file:
+    path: "{{ traefik_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy traefik.yml
+  copy:
+    src: traefik.yml
+    dest: "{{ traefik_config_dir }}/traefik.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Deploy docker-compose.yaml
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ traefik_config_dir }}/docker-compose.yaml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start Traefik with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ traefik_config_dir }}"
+    state: present

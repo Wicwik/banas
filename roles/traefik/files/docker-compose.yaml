@@ -1,0 +1,25 @@
+services:
+  traefik:
+    image: traefik:latest
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      - TZ=Europe/Bratislava
+    ports:
+      - 80:80
+      - 443:443
+      - 8080:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/traefik/traefik.yml:/traefik.yml
+      - /opt/traefik/certs:/certs
+      - /var/log/traefik/traefik.log:/traefik.log
+      - /var/log/traefik/access.log/access.log
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    name: proxy

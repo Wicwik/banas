@@ -7,4 +7,5 @@
     - ftp
     - traefik
     - jellyfin
+    - certbot
     

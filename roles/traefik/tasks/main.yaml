@@ -14,6 +14,23 @@
     group: root
     mode: '0644'
 
+- name: Deploy certs_tls.yml
+  copy:
+    src: certs_tls.yml
+    dest: "{{ traefik_config_dir }}/certs/certs_tls.yml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy certificates into Traefik dynamic directory
+  copy:
+    remote_src: true
+    src: "{{ item.src }}"
+    dest: "{{ traefik_config_dir }}/certs/{{ item.dest }}"
+  loop:
+    - { src: '/etc/letsencrypt/live/ba.belanec.eu/cert.pem', dest: 'cert.pem' }
+    - { src: '/etc/letsencrypt/live/ba.belanec.eu/privkey.pem', dest: 'privkey.pem' }
+
 - name: Deploy docker-compose.yaml
   copy:
     src: docker-compose.yaml

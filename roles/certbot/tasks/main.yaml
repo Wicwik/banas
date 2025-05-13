@@ -1,0 +1,21 @@
+- name: Install packages
+  apt:
+    name:
+      - certbot
+    state: present
+
+- name: Install snap packages
+  snap:
+    name:
+      - certbot
+    classic: true
+    state: present
+
+- name: Install Cloudflare module
+  pip:
+    name:
+      - cloudflare
+      - certbot-dns-cloudflare
+    virtualenv: /opt/venvs/certbot
+    virtualenv_python: python3.12
+    state: present

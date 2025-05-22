@@ -1,0 +1,20 @@
+- name: Create OP config directory
+  file:
+    path: "{{ op_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Deploy docker-compose.yaml
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ op_config_dir }}/docker-compose.yaml"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Start OP with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ op_config_dir }}"
+    state: present

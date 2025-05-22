@@ -1,0 +1,3 @@
+---
+op_config_dir: /opt/op
+btrfs_subvolume: "@op"

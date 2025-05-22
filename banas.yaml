@@ -8,4 +8,5 @@
     - traefik
     - jellyfin
     - certbot
+    - op
     

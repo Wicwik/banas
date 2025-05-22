@@ -1,0 +1,17 @@
+- name: Setup NAS server with Jellyfin
+  hosts: "{{ target }}"
+  become: true
+  collections:
+      - onepassword.connect 
+  tasks:
+      - name: Find a field 
+        field_info:
+          token: "{{ lookup('env', 'OP_CONNECT_TOKEN') }}"
+          vault: "Ansible"
+          item: banas-influxdb-admin
+          field: username
+        # no_log: true  # Turn off logs to avoid logging sensitive data
+        register: op_item
+      - name: Print the field definition
+        ansible.builtin.debug:
+          msg: "{{ op_item.field }}"

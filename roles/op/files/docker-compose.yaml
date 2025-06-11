@@ -4,34 +4,34 @@ services:
     container_name: op-api
     user: root:root
     volumes:
-      - "./1password-credentials.json:/home/opuser/.op/1password-credentials.json"
-      - "/data/@op/api/data:/home/opuser/.op/data"
+      - ".op:/root/.op"
+      - "/data/@op/api/data:/root/.op/data"
     networks:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.op-connect-api.rule=Host(`op-connect-api.ba.belanec.eu`)"
+      - "traefik.http.routers.op-connect-api.rule=Host(`op-connect-api.belanec.eu`)"
       - "traefik.http.routers.op-connect-api.entrypoints=websecure"
-      - "traefik.http.routers.op-connect-api.tls.domains[0].main=op-connect-api.ba.belanec.eu"
-      - "traefik.http.routers.op-connect-api.tls.domains[0].sans=*.ba.belanec.eu"
+      - "traefik.http.routers.op-connect-api.tls.domains[0].main=op-connect-api.belanec.eu"
+      - "traefik.http.routers.op-connect-api.tls.domains[0].sans=*.belanec.eu"
       - "traefik.http.routers.op-connect-api.tls=true"
       - "traefik.http.services.op-connect-api.loadbalancer.server.port=8080"
-  
+
   op-connect-sync:
     image: 1password/connect-sync:latest
-    user: root:root
     container_name: op-sync
+    user: root:root
     volumes:
-      - "./1password-credentials.json:/home/opuser/.op/1password-credentials.json"
-      - "/data/@op/api/data:/home/opuser/.op/data"
+      - ".op:/root/.op"
+      - "/data/@op/api/data:/root/.op/data"
     networks:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.op-connect-sync.rule=Host(`op-connect-sync.ba.belanec.eu`)"
+      - "traefik.http.routers.op-connect-sync.rule=Host(`op-connect-sync.belanec.eu`)"
       - "traefik.http.routers.op-connect-sync.entrypoints=websecure"
-      - "traefik.http.routers.op-connect-sync.tls.domains[0].main=op-connect-sync.ba.belanec.eu"
-      - "traefik.http.routers.op-connect-sync.tls.domains[0].sans=*.ba.belanec.eu"
+      - "traefik.http.routers.op-connect-sync.tls.domains[0].main=op-connect-sync.belanec.eu"
+      - "traefik.http.routers.op-connect-sync.tls.domains[0].sans=*.belanec.eu"
       - "traefik.http.routers.op-connect-sync.tls=true"
       - "traefik.http.services.op-connect-sync.loadbalancer.server.port=8080"
 

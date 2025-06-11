@@ -28,8 +28,8 @@
     src: "{{ item.src }}"
     dest: "{{ traefik_config_dir }}/certs/{{ item.dest }}"
   loop:
-    - { src: '/etc/letsencrypt/live/ba.belanec.eu/cert.pem', dest: 'cert.pem' }
-    - { src: '/etc/letsencrypt/live/ba.belanec.eu/privkey.pem', dest: 'privkey.pem' }
+    - { src: '/etc/letsencrypt/live/belanec.eu/cert.pem', dest: 'cert.pem' }
+    - { src: '/etc/letsencrypt/live/belanec.eu/privkey.pem', dest: 'privkey.pem' }
 
 - name: Deploy docker-compose.yaml
   copy:

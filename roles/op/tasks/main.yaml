@@ -6,6 +6,11 @@
     group: root
     mode: '0755'
 
+- name: Create Btrfs subvolume
+  command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
+  args:
+    creates: "/data/{{ btrfs_subvolume }}"
+
 - name: Deploy docker-compose.yaml
   copy:
     src: docker-compose.yaml

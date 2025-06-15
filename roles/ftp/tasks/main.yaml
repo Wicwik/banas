@@ -17,3 +17,22 @@
     name: "{{ ftp_service }}"
     state: started
     enabled: yes
+
+- name: Get data user password
+  onepassword.connect.field_info:
+    token: "{{ connect_token }}"
+    item: ftp-data
+    field: password
+    vault: "{{ ansible_vault }}"
+  no_log: false
+  register: data_pwd
+
+- name: Add the user 'data'
+  ansible.builtin.user:
+    name: data
+    comment: Data User
+    group: data
+    groups: jellyfin
+    shell: /bin/bash
+    home:  "/data"
+    password: "{{ data_pwd.field.value | password_hash('sha512') }}"

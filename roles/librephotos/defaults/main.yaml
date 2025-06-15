@@ -1,0 +1,2 @@
+btrfs_subvolume: "@photos"
+librephotos_config_dir: /opt/librephotos

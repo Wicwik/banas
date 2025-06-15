@@ -20,10 +20,6 @@
     msg: "/data must be a mounted Btrfs filesystem"
   when: not data_dir.stat.exists
 
-- name: Get UUID of the Btrfs filesystem
-  command: "blkid -s UUID -o value /dev/sda"
-  register: btrfs_uuid
-
 - name: Create Btrfs subvolume
   command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
   args:

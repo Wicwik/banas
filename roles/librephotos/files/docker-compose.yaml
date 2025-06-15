@@ -1,0 +1,86 @@
+services:
+  proxy:
+    image: reallibrephotos/librephotos-proxy:${tag}
+    container_name: proxy
+    restart: unless-stopped
+    volumes:
+      - ${scanDirectory}:/data
+      - ${data}/protected_media:/protected_media
+    ports:
+      - ${httpPort:-3000}:80
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy.rule=Host(`photos-ba.belanec.eu`)"
+      - "traefik.http.routers.proxy.entrypoints=websecure"
+      - "traefik.http.routers.proxy.tls.domains[0].main=photos-ba.belanec.eu"
+      - "traefik.http.routers.proxy.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.proxy.tls=true"
+      - "traefik.http.services.proxy.loadbalancer.server.port=80"
+    depends_on:
+      - backend
+      - frontend
+
+  db:
+    image: pgautoupgrade/pgautoupgrade:latest
+    container_name: db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=${dbUser}
+      - POSTGRES_PASSWORD=${dbPass}
+      - POSTGRES_DB=${dbName}
+    volumes:
+      - ${data}/db:/var/lib/postgresql/data
+    networks:
+      - proxy
+    healthcheck:
+      test: psql -U ${dbUser} -d ${dbName} -c "SELECT 1;"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  frontend:
+    image: reallibrephotos/librephotos-frontend:${tag}
+    container_name: frontend
+    networks:
+      - proxy
+    restart: unless-stopped
+
+  backend:
+    image: reallibrephotos/librephotos:${tag}
+    container_name: backend
+    restart: unless-stopped
+    volumes:
+      - ${scanDirectory}:/data
+      - ${data}/protected_media:/protected_media
+      - ${data}/logs:/logs
+      - ${data}/cache:/root/.cache
+    networks:
+      - proxy
+    environment:
+      - SECRET_KEY=${shhhhKey:-}
+      - BACKEND_HOST=backend
+      - ADMIN_EMAIL=${adminEmail:-}
+      - ADMIN_USERNAME=${userName:-}
+      - ADMIN_PASSWORD=${userPass:-}
+      - DB_BACKEND=postgresql
+      - DB_NAME=${dbName}
+      - DB_USER=${dbUser}
+      - DB_PASS=${dbPass}
+      - DB_HOST=${dbHost}
+      - DB_PORT=5432
+      - MAPBOX_API_KEY=${mapApiKey:-}
+      - WEB_CONCURRENCY=${gunniWorkers:-1}
+      - SKIP_PATTERNS=${skipPatterns:-}
+      - ALLOW_UPLOAD=${allowUpload:-false}
+      - CSRF_TRUSTED_ORIGINS=${csrfTrustedOrigins:-}
+      - DEBUG=0
+    depends_on:
+      db:
+        condition: service_healthy
+
+
+networks:
+  proxy:
+    name: proxy

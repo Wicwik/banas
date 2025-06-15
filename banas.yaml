@@ -1,7 +1,14 @@
 - name: Setup NAS server with Jellyfin
   hosts: "{{ target }}"
   become: true
-
+  vars:
+    connect_token: "{{ lookup('ansible.builtin.env', 'OP_API_TOKEN') }}" 
+    ansible_vault: r26avvbe4vsjsx2cnby7jw5unq
+  environment:
+    OP_CONNECT_HOST: https://op-connect-api.belanec.eu 
+  collections:
+    - onepassword.connect
+  tasks:
   roles:
     - common
     - ftp
@@ -9,4 +16,6 @@
     - jellyfin
     - certbot
     - op
+    - librephotos
+    - nextcloud
     

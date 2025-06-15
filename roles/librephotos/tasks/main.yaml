@@ -1,0 +1,55 @@
+- name: Create Btrfs subvolume
+  command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
+  args:
+    creates: "/data/{{ btrfs_subvolume }}"
+
+- name: Create librephotos config directory
+  file:
+    path: "{{ librephotos_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+- name: Find a field labeled username in an item named librephotos-db in a specific vault
+  onepassword.connect.item_info:
+    token: "{{ connect_token }}"
+    item: librephotos-db
+    vault: "{{ ansible_vault }}"
+  no_log: false  # Turn off logs to avoid logging sensitive data
+  register: op_item
+
+# - name: Print the item definition
+#   ansible.builtin.debug:
+#     msg: "{{ op_item.op_item }}"
+
+# - name: show dictionary
+#   ansible.builtin.debug:
+#     msg: "{{item.key}}: {{item.value}}"
+#   with_dict: "{{ op_item }}"
+
+- name: Setting facts so that they will be persisted in the fact cache
+  ansible.builtin.set_fact:
+    dbName: "{{ op_item.op_item.fields.dbName.value }}"
+    dbUser: "{{ op_item.op_item.fields.username.value }}"
+    dbPass: "{{ op_item.op_item.fields.password.value }}"
+    dbHost: "{{ op_item.op_item.fields.dbHost.value }}"
+
+- name: Copy librephotos .env config
+  template:
+    src: librephotos.env.j2
+    dest: "{{ librephotos_config_dir }}/.env"
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Copy Docker Compose file
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ librephotos_config_dir }}/docker-compose.yaml"
+    mode: '0644'
+
+- name: Start librephotos container with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ librephotos_config_dir }}"
+    state: present

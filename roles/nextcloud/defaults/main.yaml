@@ -1,0 +1,2 @@
+btrfs_subvolume: "@files"
+connect-server-token: "{{ lookup('ansible.builtin.env', 'OP_API_TOKEN') }}" 

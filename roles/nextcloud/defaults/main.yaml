@@ -1,2 +1,2 @@
 btrfs_subvolume: "@files"
-connect-server-token: "{{ lookup('ansible.builtin.env', 'OP_API_TOKEN') }}" 
+nextcloud_config_dir: /opt/nextcloud

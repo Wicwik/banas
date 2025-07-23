@@ -3,15 +3,21 @@
   args:
     creates: "/data/{{ btrfs_subvolume }}"
 
-- name: Find a field labeled username in an item named librephotos-db in a specific vault
-  onepassword.connect.field_info:
-    token: "{{ connect_token }}"
-    item: librephotos-db
-    field: username
-    vault: r26avvbe4vsjsx2cnby7jw5unq
-  no_log: false  # Turn off logs to avoid logging sensitive data
-  register: op_item
+- name: Create nextcloud config directory
+  file:
+    path: "{{ nextcloud_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
 
-- name: Print the field definition
-  ansible.builtin.debug:
-    msg: "{{ op_item.field }}"
+- name: Copy Docker Compose file
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ nextcloud_config_dir }}/docker-compose.yaml"
+    mode: '0644'
+
+- name: Start librephotos container with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ nextcloud_config_dir }}"
+    state: present

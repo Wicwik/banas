@@ -5,7 +5,7 @@
     connect_token: "{{ lookup('ansible.builtin.env', 'OP_API_TOKEN') }}" 
     ansible_vault: r26avvbe4vsjsx2cnby7jw5unq
   environment:
-    OP_CONNECT_HOST: https://op-connect-api.belanec.eu 
+    OP_CONNECT_HOST: https://op.belanec.eu 
   collections:
     - onepassword.connect
   tasks:

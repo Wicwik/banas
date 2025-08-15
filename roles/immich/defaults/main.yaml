@@ -1,2 +1,2 @@
-btrfs_subvolume: "@photos"
+btrfs_subvolume: "@immich"
 immich_config_dir: /opt/immich

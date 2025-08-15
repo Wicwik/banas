@@ -20,6 +20,14 @@ services:
       # Do not edit the next line. If you want to change the media storage location on your system, edit the value of UPLOAD_LOCATION in the .env file
       - ${UPLOAD_LOCATION}:/data
       - /etc/localtime:/etc/localtime:ro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.proxy.rule=Host(`photos-ba.belanec.eu`)"
+      - "traefik.http.routers.proxy.entrypoints=websecure"
+      - "traefik.http.routers.proxy.tls.domains[0].main=photos-ba.belanec.eu"
+      - "traefik.http.routers.proxy.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.proxy.tls=true"
+      - "traefik.http.services.proxy.loadbalancer.server.port=2283"
     env_file:
       - .env
     ports:

@@ -32,6 +32,8 @@ services:
       - .env
     ports:
       - '2283:2283'
+    networks:
+      - proxy
     depends_on:
       - redis
       - database
@@ -49,6 +51,8 @@ services:
     #   service: cpu # set to one of [armnn, cuda, rocm, openvino, openvino-wsl, rknn] for accelerated inference - use the `-wsl` version for WSL2 where applicable
     volumes:
       - model-cache:/cache
+    networks:
+      - proxy
     env_file:
       - .env
     restart: always
@@ -60,6 +64,8 @@ services:
     image: docker.io/valkey/valkey:8-bookworm@sha256:facc1d2c3462975c34e10fccb167bfa92b0e0dbd992fc282c29a61c3243afb11
     healthcheck:
       test: redis-cli ping || exit 1
+    networks:
+      - proxy
     restart: always
 
   database:
@@ -76,7 +82,13 @@ services:
       # Do not edit the next line. If you want to change the database storage location on your system, edit the value of DB_DATA_LOCATION in the .env file
       - ${DB_DATA_LOCATION}:/var/lib/postgresql/data
     shm_size: 128mb
+    networks:
+      - proxy
     restart: always
 
 volumes:
   model-cache:
+
+networks:
+  proxy:
+    name: proxy

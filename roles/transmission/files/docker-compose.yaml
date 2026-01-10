@@ -1,0 +1,27 @@
+services:
+  transmission:
+    image: ghcr.io/linuxserver/transmission
+    environment:
+      - TZ=Europe/Bratislava
+    volumes:
+      - /opt/transmission/config/transmission:/config
+      - /data/@downloads/transmission:/downloads
+    ports:
+      - 50000:50000
+      - 50000:50000/udp
+      - 9092:9091
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.transmission.rule=Host(`transmission-ba.belanec.eu`)"
+      - "traefik.http.routers.transmission.entrypoints=websecure"
+      - "traefik.http.routers.transmission.tls.domains[0].main=transmission-ba.belanec.eu"
+      - "traefik.http.routers.transmission.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.transmission.tls=true"
+      - "traefik.http.services.transmission.loadbalancer.server.port=9091"
+
+networks:
+  proxy:
+    name: proxy

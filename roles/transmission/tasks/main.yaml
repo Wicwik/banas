@@ -1,0 +1,42 @@
+- name: Ensure transmission config directory exists
+  file:
+    path: "{{ transmission_config_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+
+- name: Ensure /data is mounted and available
+  stat:
+    path: /data
+  register: data_dir
+
+- name: Fail if /data is not a Btrfs mount
+  fail:
+    msg: "/data must be a mounted Btrfs filesystem"
+  when: not data_dir.stat.exists
+
+- name: Create downloads subvolume
+  command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
+  args:
+    creates: "/data/{{ btrfs_subvolume }}"
+
+- name: Create transmission directory
+  file:
+    path: "/data/{{ btrfs_subvolume }}/transmission"
+    state: directory
+    owner: root
+    group: root
+    mode: '0775'
+
+- name: Copy Docker Compose file
+  copy:
+    src: docker-compose.yaml
+    dest: "{{ transmission_config_dir }}/docker-compose.yaml"
+    mode: '0644'
+
+- name: Start Transmission container with Docker Compose
+  community.docker.docker_compose_v2:
+    project_src: "{{ transmission_config_dir }}"
+    state: present
+

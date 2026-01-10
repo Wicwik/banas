@@ -1,0 +1,2 @@
+transmission_config_dir: /opt/transmission
+btrfs_subvolume: "@downloads"

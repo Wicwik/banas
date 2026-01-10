@@ -1,0 +1,60 @@
+services:
+  mealie:
+    image: ghcr.io/mealie-recipes/mealie:latest #
+    container_name: mealie
+    restart: always
+    ports:
+        - "9925:9000"
+    networks:
+      - proxy
+    deploy:
+      resources:
+        limits:
+          memory: 1000M #
+    volumes:
+      - /opt/mealie/data:/app/data/
+    environment:
+      # Set Backend ENV Variables Here
+      TZ: Europe/Bratislava
+      BASE_URL: https://recepty.belanec.eu
+      # Database Settings
+      DB_ENGINE: postgres
+      POSTGRES_USER: ${dbUser}
+      POSTGRES_PASSWORD: ${dbPass}
+      POSTGRES_SERVER: ${dbHost}
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: ${dbName}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.mealie.rule=Host(`recepty-ba.belanec.eu`)"
+      - "traefik.http.routers.mealie.entrypoints=websecure"
+      - "traefik.http.routers.mealie.tls.domains[0].main=recepty-ba.belanec.eu"
+      - "traefik.http.routers.mealie.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.mealie.tls=true"
+      - "traefik.http.services.mealie.loadbalancer.server.port=9000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  postgres:
+    container_name: postgres
+    image: postgres:17
+    restart: always
+    networks:
+      - proxy
+    volumes:
+      - /opt/mealie/pgdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: ${dbPass}
+      POSTGRES_USER: ${dbUser}
+      PGUSER: ${dbUser}
+      POSTGRES_DB: ${dbName}
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+
+networks:
+  proxy:
+    name: proxy

@@ -1,0 +1,36 @@
+# For details and other explanations about this file refer to:
+# https://github.com/vrtmrz/obsidian-livesync/blob/main/docs/setup_own_server.md#traefik
+services:
+  couchdb:
+    image: couchdb:latest
+    container_name: obsidian-livesync
+    environment:
+      - COUCHDB_USER=${dbUser}
+      - COUCHDB_PASSWORD=${dbPass}
+    volumes:
+      - /data/@obsidian-livesync:/opt/couchdb/data
+      - ./local.d:/opt/couchdb/etc/local.d
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.obsidian-livesync.rule=Host(`obsidian-ba.belanec.eu`)"
+      - "traefik.http.routers.obsidian-livesync.entrypoints=websecure"
+      - "traefik.http.routers.obsidian-livesync.tls.domains[0].main=obsidian-ba.belanec.eu"
+      - "traefik.http.routers.obsidian-livesync.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.obsidian-livesync.tls=true"
+      - "traefik.http.services.obsidian-livesync.loadbalancer.server.port=5984"
+      - "traefik.http.routers.obsidian-livesync.middlewares=obsidiancors"
+
+      # The part needed for CORS to work on Traefik 2.x starts here
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowmethods=GET,PUT,POST,HEAD,DELETE"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowheaders=accept,authorization,content-type,origin,referer"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolalloworiginlist=app://obsidian.md,capacitor://localhost,http://localhost"
+      - "traefik.http.middlewares.obsidiancors.headers.accesscontrolmaxage=3600"
+      - "traefik.http.middlewares.obsidiancors.headers.addvaryheader=true"
+      - "traefik.http.middlewares.obsidiancors.headers.accessControlAllowCredentials=true"
+
+networks:
+  proxy:
+    name: proxy

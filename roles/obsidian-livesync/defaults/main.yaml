@@ -1,0 +1,3 @@
+obsidian_livesync_config_dir: /opt/obsidian-livesync
+
+btrfs_subvolume: "@obsidian-livesync"

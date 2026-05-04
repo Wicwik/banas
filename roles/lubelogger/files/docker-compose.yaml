@@ -1,0 +1,24 @@
+services:
+  lubelogger:
+    image: ghcr.io/hargata/lubelogger:latest
+    container_name: lubelogger
+    ports:
+      - 8081:8080
+    volumes:
+      - /opt/lubelogger/keys:/root/.aspnet/DataProtection-Keys
+      - /data/@lubelogger:/App/data
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lubelogger.rule=Host(`lubelogger-ba.belanec.eu`)"
+      - "traefik.http.routers.lubelogger.entrypoints=websecure"
+      - "traefik.http.routers.lubelogger.tls.domains[0].main=lubelogger-ba.belanec.eu"
+      - "traefik.http.routers.lubelogger.tls.domains[0].sans=*.belanec.eu"
+      - "traefik.http.routers.lubelogger.tls=true"
+      - "traefik.http.services.lubelogger.loadbalancer.server.port=8080"
+    restart: unless-stopped
+
+networks:
+  proxy:
+    name: proxy

@@ -6,6 +6,11 @@
     group: root
     mode: '0775'
 
+- name: Create Btrfs subvolume
+  command: "btrfs subvolume create /data/{{ btrfs_subvolume }}"
+  args:
+    creates: "/data/{{ btrfs_subvolume }}"
+
 - name: Find a field labeled username in an item named obsidian-livesync-db in a specific vault
   onepassword.connect.item_info:
     token: "{{ connect_token }}"

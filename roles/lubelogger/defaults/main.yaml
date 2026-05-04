@@ -1,0 +1,3 @@
+lubelogger_config_dir: /opt/lubelogger
+
+btrfs_subvolume: "@lubelogger"
